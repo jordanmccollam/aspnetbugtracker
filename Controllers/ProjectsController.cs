@@ -87,15 +87,16 @@ namespace BugTracker.Controllers
             if (!ModelState.IsValid)
                 return Redirect("Home");
 
-            if (issue.AssignedTo != null && issue.AssignedTo != issue.OwnerUser.UserName)
+            if (issue.AssignedTo != null)
             {
                 var project = _context.Projects
-                .Single(p => p.Id == issue.ProjectId);
+                    .Single(p => p.Id == issue.ProjectId);
 
                 var user = _context.Users
                     .SingleOrDefault(u => u.UserName == issue.AssignedTo);
 
-                project.Users.Add(user);
+                if (project.OwnerUser.UserName != issue.AssignedTo)
+                    project.Users.Add(user);
             }
 
             issue.OwnerUserId = User.Identity.GetUserId();
