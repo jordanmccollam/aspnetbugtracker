@@ -50,6 +50,12 @@
         <!-- Page Content  -->
         <div id="content" class="p-4 p-md-5 pt-5">
             <div class="container-fluid body-content pt-5">
+                @if (User.Identity.Name == "demo@bugtracker.com")
+                {
+                    <h1 class="text-center">*DEMO*</h1>
+                    <p class="text-center border-bottom">Please be mindful that others have access to this demo account</p>
+                }
+
                 @RenderBody()
                 <hr />
                 <footer>

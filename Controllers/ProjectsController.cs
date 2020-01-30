@@ -87,6 +87,17 @@ namespace BugTracker.Controllers
             if (!ModelState.IsValid)
                 return Redirect("Home");
 
+            if (issue.AssignedTo != null)
+            {
+                var project = _context.Projects
+                .Single(p => p.Id == issue.ProjectId);
+
+                var user = _context.Users
+                    .SingleOrDefault(u => u.UserName == issue.AssignedTo);
+
+                project.Users.Add(user);
+            }
+
             issue.OwnerUserId = User.Identity.GetUserId();
 
             _context.Issues.Add(issue);
@@ -181,6 +192,14 @@ namespace BugTracker.Controllers
             {
                 var userInDb = _context.Users
                 .SingleOrDefault(u => u.UserName == userToRemove);
+
+                var projectIssues = _context.Issues
+                    .Where(i => i.ProjectId == id)
+                    .ToList();
+
+                var issuesToEdit = projectIssues.Where(i => i.AssignedTo == userToRemove).ToList();
+
+                issuesToEdit.ForEach(i => i.AssignedTo = null);
 
                 _context.Projects
                     .SingleOrDefault(p => p.Id == id)
