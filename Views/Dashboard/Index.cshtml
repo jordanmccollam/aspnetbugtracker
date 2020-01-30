@@ -1,0 +1,122 @@
+﻿@model BugTracker.ViewModels.DashboardViewModel
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <h2 class="border-bottom custom-font pb-2"><i class="fas fa-chart-pie"></i> Dashboard</h2>
+    <p class="mb-4">TIP: Click on a column to filter / sort. TIP: Hover over any row to see its details</p>
+
+    <div class="row">
+        <div class="col-md-6">
+
+           <div class="border-bottom border-info pt-3">
+                <h3 class="text-right text-info slide-in-left"><i class="fas fa-project-diagram"></i> Projects</h3>
+            </div>
+
+           <table class="table table-info table-hover" id="projects-table">
+               <thead>
+                   <tr>
+                       <th>Name</th>
+                       <th>Owner</th>
+                       <th>Issues</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   @foreach (var project in Model.Projects)
+                   {
+                       <tr class="project">
+                           <th><a class="text-decoration-none text-dark" href="/Projects/Details/@project.Id">@project.Name</a></th>
+                           <td class="d-none swing-in-top-fwd"><i class="fas fa-user"></i> @project.OwnerUser.UserName</td>
+                           <td class="d-none swing-in-top-fwd"><i class="fas fa-tasks"></i> @project.Issues.Count()</td>
+                       </tr>
+                   }
+               </tbody>
+           </table>
+
+            <button id="create-project" class="btn btn-info btn-block rounded shadow-sm mt-5"><i class="fas fa-plus"></i> Create New Project</button>
+        </div>
+
+        <div class="col-md-6">
+            <div class="border-bottom border-success pt-3">
+                <h4 class="text-right text-success slide-in-left"><i class="fas fa-tasks"></i> Issues Assigned to You</h4>
+            </div>
+
+            <table class="table table-success table-hover" id="issues-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Project</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var issue in Model.Issues)
+                    {
+                        <tr class="issue">
+                            <th><a class="text-decoration-none text-dark" href="/Projects/Details/@issue.Project.Id">@issue.Name</a></th>
+                            <td class="d-none swing-in-top-fwd"><i class="fas fa-project-diagram"></i> @issue.Project.Name</td>
+                            <td class="d-none swing-in-top-fwd"><i class="fas fa-exclamation"></i> @issue.Type</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <button id="create-issue" class="btn btn-success btn-block rounded mt-5"><i class="fas fa-plus"></i> Create New Issue</button>
+        </div>
+
+        <p class="pt-5 mt-5 hide-me">
+            Tincidunt integer eu augue augue nunc elit dolor, luctus placerat scelerisque euismod, iaculis eu lacus nunc mi elit, vehicula ut laoreet ac, aliquam sit amet justo nunc tempor, metus vel.
+
+        </p>
+
+        @Html.Partial("_CreateProjectModal", new BugTracker.Models.Project())
+        @Html.Partial("_CreateIssueModal", new BugTracker.Models.Issue(), new ViewDataDictionary { { "Projects", Model.Projects } })
+    </div>
+
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            $("#projects-table").DataTable();
+            $("#issues-table").DataTable();
+
+            // ANIMATIONS
+            $(".project, .issue").mouseover(function () {
+                $(this).children(".swing-in-top-fwd").removeClass("swing-out-top-bck");
+                $(this).children(".d-none").removeClass("d-none");
+            });
+            $(".project, .issue").mouseout(function () {
+                $(this).children(".swing-in-top-fwd").addClass("swing-out-top-bck");
+            });
+
+            // MODAL
+            $("#create-project").on("click", function () {
+                event.preventDefault();
+                $("#create-project-modal").modal("show");
+            });
+            $("#create-issue").on("click", function () {
+                event.preventDefault();
+                $("#create-issue-modal").modal("show");
+            });
+
+            styleTable();
+            function styleTable() {
+                $("#projects-table_filter input, #issues-table_filter input").addClass("form-control rounded");
+                $("#projects-table_info, #issues-table_info").addClass("float-left");
+                $("#projects-table_paginate, #issues-table_paginate").addClass("btn-group float-right");
+                $("#issues-table_paginate").find(".paginate_button").addClass("btn btn-success btn-sm text-light");
+                $("#projects-table_paginate").find(".paginate_button").addClass("btn btn-info btn-sm text-light");
+            }
+
+            $("#projects-table_paginate, #issues-table_paginate").on("click", function () {
+                styleTable();
+            });
+
+            $("#projects-table_filter input, #projects-table_filter input").change(function () {
+                styleTable();
+            });
+        });
+    </script>    
+}

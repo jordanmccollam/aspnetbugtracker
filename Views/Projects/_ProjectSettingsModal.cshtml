@@ -1,0 +1,90 @@
+﻿@model BugTracker.Models.Project
+
+<div id="project-settings-modal" class="modal scale-in-center" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @if (Model.OwnerUser.UserName == User.Identity.Name)
+                {
+
+                    using (Html.BeginForm("EditProject", "Projects"))
+                    {
+                        @Html.HttpMethodOverride(HttpVerbs.Put)
+
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Name)
+                            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", Value = Model.Name })
+                        </div>
+
+                        @Html.HiddenFor(m => m.Id)
+
+                        <button class="btn btn-success rounded" type="submit">Edit <i class="fas fa-edit"></i></button>
+                    }
+
+                    using (Html.BeginForm("AddUser", "Projects"))
+                    {
+                        @Html.HttpMethodOverride(HttpVerbs.Put)
+
+                        <div class="form-group mt-3">
+                            <label for="userToAdd">Add User</label>
+                            <input class="form-control" type="text" name="userToAdd" id="userToAdd" placeholder="(Users Email)" />
+                        </div>
+
+                        @Html.HiddenFor(m => m.Id)
+
+                        <button class="btn btn-success rounded" type="submit">Add <i class="fas fa-user-plus"></i></button>
+                    }
+
+                    using (Html.BeginForm("RemoveUser", "Projects"))
+                    {
+                        @Html.HttpMethodOverride(HttpVerbs.Put)
+
+                        <div class="form-group mt-3">
+                            <label for="userToRemove">Remove User</label>
+                            <input class="form-control" type="text" name="userToRemove" id="userToRemove" placeholder="(Users Email)" />
+                        </div>
+
+                        @Html.HiddenFor(m => m.Id)
+
+                        <button type="submit" class="btn btn-danger rounded">Remove <i class="fas fa-user-minus"></i></button>
+                    }
+
+                }
+
+                <h3 class="border-bottom pb-2 mt-3">Users in @Model.Name</h3>
+
+                <ul class="list-unstyled">
+                    <li><span class="text-success custom-font">Owner:</span> @Model.OwnerUser.UserName</li>
+                    @foreach (var user in Model.Users)
+                    {
+                        <li class="py-2">
+                            <i class="fas fa-user"></i> @user.UserName
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="modal-footer">
+                @if (Model.OwnerUser.UserName == User.Identity.Name)
+                {
+                    using (Html.BeginForm("DeleteProject", "Projects"))
+                    {
+                        @Html.HttpMethodOverride(HttpVerbs.Delete)
+
+                        @Html.HiddenFor(m => m.Id)
+
+                        <button type="submit" class="btn btn-danger rounded">Delete Project <i class="far fa-trash-alt"></i></button>
+                    }
+                } else
+                {
+                    <p>(You can't edit this project because you are not the owner)</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

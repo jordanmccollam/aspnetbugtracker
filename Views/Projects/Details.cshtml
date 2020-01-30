@@ -1,0 +1,187 @@
+﻿@using System.Linq;
+@model BugTracker.ViewModels.ProjectsViewModel
+@{
+    ViewBag.Title = Model.Project.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="custom-font">@Model.Project.Name <button class="btn" id="project-settings"><i class="fas fa-cog fa-2x"></i></button></h2>
+<p class="mb-4">TIP: Click an issue to see more details.</p>
+
+<div class="row">
+    <div class="col-md-7">
+
+        <div class="border-bottom border-success pt-2">
+            <h2 class="text-right text-success slide-in-left custom-font"><i class="fas fa-tasks"></i> Issues</h2>
+        </div>
+
+        <table class="table table-success table-hover" id="issues-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var issue in Model.Issues)
+                {
+                <tr class="issue issue-clickable" id="@issue.Id">
+                    <th>@issue.Name</th>
+                    @if (issue.AssignedTo.IsEmpty())
+                    {
+                        <td><i class="fas fa-user"></i> no user assigned</td>
+                    }
+                    else
+                    {
+                        <td><i class="fas fa-user"></i> @issue.AssignedTo</td>
+                    }
+                    <td class="@issue.Type"><i class="fas fa-exclamation"></i> @issue.Type</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+            <button id="create-issue" class="btn btn-success btn-block rounded shadow-sm mt-5"><i class="fas fa-plus"></i> Create New Issue</button>
+    </div>
+
+    <div class="col-md-5">
+        @foreach (var issue in Model.Issues)
+        {
+        <div id="issue-@issue.Id" class="d-none issue-details swing-in-top-fwd">
+            <h4 class="text-center custom-font border-bottom pb-2"><i class="fas fa-check"></i> @issue.Name</h4>
+
+            <span><span class="text-warning custom-font">Created By:</span> @issue.OwnerUser.UserName</span>
+            <br />
+            <span><span class="text-warning custom-font">Assigned To:</span> @issue.AssignedTo</span>
+
+            @if (!issue.Description.IsEmpty())
+            {
+                <p class="border-left border-warning pl-3 py-2 my-2">@issue.Description</p>
+            }
+            else
+            {
+                <p class="border-left border-warning pl-3 py-2 my-2">This project has no description...</p>
+            }
+
+
+            @using (Html.BeginForm("EditIssue", "Projects"))
+            {
+                @Html.HttpMethodOverride(HttpVerbs.Put)
+
+                <p class="mb-1 custom-font text-warning mt-3"><i class="fas fa-exclamation"></i> Change Status</p>
+
+                <div class="form-group mb-2">
+                    <select class="form-control" id="Type" name="Type">
+                        <option value="@issue.Type">Currently: @issue.Type</option>
+                        <option value="idea">Idea</option>
+                        <option value="todo">Todo</option>
+                        <option value="in-progress">In-Progress</option>
+                        <option value="done">Done</option>
+                    </select>
+                </div>
+
+                <p class="mb-1 custom-font text-warning mt-3"><i class="fas fa-user-edit"></i> Assign to different user</p>
+
+                <div class="form-group mb-2">
+                    <select class="form-control" id="AssignedTo" name="AssignedTo">
+                        <option value="@issue.AssignedTo">Currently: @issue.AssignedTo</option>
+                        @if (issue.AssignedTo != issue.OwnerUser.UserName)
+                        {
+                            <option value="@issue.OwnerUser.UserName">@issue.OwnerUser.UserName</option>
+                        }
+                        @foreach (var user in Model.Project.Users)
+                        {
+                            <option value="@user.UserName">@user.UserName</option>
+                        }
+                    </select>
+                </div>
+
+                @Html.HiddenFor(m => m.Issues.Single(i => i.Id == issue.Id).Id, new { Value = issue.Id })
+
+                <button class="btn btn-warning btn-block rounded" type="submit"><i class="fas fa-pencil-alt"></i> Update Issue</button>
+
+            }
+
+            @using (Html.BeginForm("DeleteIssue", "Projects"))
+            {
+                @Html.HttpMethodOverride(HttpVerbs.Delete)
+
+                @Html.HiddenFor(m => m.Issues.Single(i => i.Id == issue.Id).Id, new { Value = issue.Id })
+
+                <button class="btn btn-danger btn-block rounded mt-2" type="submit"><i class="far fa-trash-alt"></i> Delete Issue</button>
+            }
+        </div>
+        }
+    </div>
+
+
+    <p class="pt-5 mt-5 hide-me">
+        Tincidunt integer eu augue augue nunc elit dolor, luctus placerat scelerisque euismod, iaculis eu lacus nunc mi elit, vehicula ut laoreet ac, aliquam sit amet justo nunc tempor, metus vel.
+
+    </p>
+
+    @Html.Partial("_CreateIssueModal", new BugTracker.Models.Issue(), new ViewDataDictionary { { "ProjectId", Model.Project.Id } })
+    @Html.Partial("_ProjectSettingsModal", Model.Project)
+</div>
+
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            $("#issues-table").DataTable();
+
+            // ANIMATIONS
+            $(".issue").mouseover(function () {
+                $(this).children(".swing-in-top-fwd").removeClass("swing-out-top-bck");
+                $(this).children(".d-none").removeClass("d-none");
+            });
+            $(".issue").mouseout(function () {
+                $(this).children(".swing-in-top-fwd").addClass("swing-out-top-bck");
+            });
+
+            // MODAL
+            $("#create-issue").on("click", function () {
+                event.preventDefault();
+                $("#create-issue-modal").modal("show");
+            });
+            $("#project-settings").on("click", function () {
+                event.preventDefault();
+                $("#project-settings-modal").modal("show");
+            });
+
+            // Clickable Issues
+            $(".issue-clickable").on("click", function () {
+
+                $(".issue-details").addClass("d-none");
+
+                var issueId = $(this).attr("id");
+
+
+                $("#issue-" + issueId).removeClass("d-none");
+            });
+
+            styleTable();
+            function styleTable() {
+                $("#issues-table_filter input").addClass("form-control rounded");
+                $("#issues-table_info").addClass("float-left");
+                $("#issues-table_paginate").addClass("btn-group float-right");
+                $(".paginate_button").addClass("btn btn-success btn-sm text-light");
+            }
+
+            $("#issues-table_paginate").on("click", function () {
+                //setTimeout(styleTable, 100);
+                styleTable();
+            });
+
+            $("#issues-table_filter input").change(function () {
+                styleTable();
+            });
+
+
+        });
+    </script>
+}
+

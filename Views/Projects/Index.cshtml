@@ -1,0 +1,86 @@
+﻿@using System.Linq;
+@model IEnumerable<BugTracker.Models.Project>
+@{
+    ViewBag.Title = "Projects";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <h2 class="custom-font"><i class="fas fa-project-diagram"></i> Projects</h2>
+    <p class="mb-4">TIP: Click a project name to see its issues.</p>
+
+<div class="row">
+    <div class="col-12">
+
+        <div class="border-bottom border-info pt-2">
+            <h2 class=" text-right text-info slide-in-left custom-font"><i class="fas fa-project-diagram"></i> Projects</h2>
+        </div>
+
+    <table class="table table-info table-hover" id="projects-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Owner</th>
+                <th>Issues</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in Model)
+            {
+                <tr class="project">
+                    <th><a class="text-decoration-none text-dark" href="/Projects/Details/@project.Id">@project.Name</a></th>
+                    <td class="d-none swing-in-top-fwd"><i class="fas fa-user"></i> @project.OwnerUser.Email</td>
+                    <td class="d-none swing-in-top-fwd"><i class="fas fa-tasks"></i> @project.Issues.Count()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+        <button id="create-project" class="btn btn-info btn-block rounded shadow-sm mt-5"><i class="fas fa-plus"></i> Create New Project</button>
+    </div>
+
+
+
+    @Html.Partial("_CreateProjectModal", new BugTracker.Models.Project())
+</div>
+
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+
+            $("#projects-table").DataTable();
+
+            // ANIMATIONS
+            $(".project").mouseover(function () {
+                $(this).children(".swing-in-top-fwd").removeClass("swing-out-top-bck");
+                $(this).children(".d-none").removeClass("d-none");
+            });
+            $(".project").mouseout(function () {
+                $(this).children(".swing-in-top-fwd").addClass("swing-out-top-bck");
+            });
+
+            // MODAL
+            $("#create-project").on("click", function () {
+                event.preventDefault();
+                $("#create-project-modal").modal("show");
+            });
+
+            styleTable();
+            function styleTable() {
+                $("#projects-table_filter input").addClass("form-control rounded");
+                $("#projects-table_info").addClass("float-left");
+                $("#projects-table_paginate").addClass("btn-group float-right");
+                $(".paginate_button").addClass("btn btn-info btn-sm text-light");
+            }
+
+            $("#projects-table_paginate").on("click", function () {
+                styleTable();
+            });
+
+            $("#projects-table_filter input").change(function () {
+                styleTable();
+            });
+        });
+    </script>
+}
