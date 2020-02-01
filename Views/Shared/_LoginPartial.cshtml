@@ -11,7 +11,7 @@
             <li class="nav-item">
                 @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @class = "nav-link" })
             </li>
-            <li class="nav-item">
+            <li class="nav-item d-none d-lg-block">
                 <a href="/Notifications" class="btn btn-link nav-link notifications"><i class="fas fa-bell"></i></a>
                 @if (Model.Any())
                 {
