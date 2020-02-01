@@ -6,12 +6,8 @@ using BugTracker.Models;
 
 namespace BugTracker.ViewModels
 {
-    public class DashboardViewModel
+    public class ViewBaseModel
     {
-        public IEnumerable<Project> Projects { get; set; }
-
-        public IEnumerable<Issue> Issues { get; set; }
-
         public IEnumerable<Notification> Notifications { get; set; }
     }
 }

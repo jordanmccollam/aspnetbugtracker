@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -19,33 +20,15 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
-                @Html.Partial("_LoginPartial")
+                @{ Html.RenderAction("Navbar", "Notifications");}
+                @*@Html.Partial("_LoginPartial")*@
             </div>
         </div>
     </div>
 
     <div class="wrapper d-flex align-items-stretch">
-        <nav id="sidebar" class="shadow bg-white navbar-light">
-            <div class="custom-menu">
-                <button type="button" id="sidebarCollapse" class="btn btn-warning">
-                    <i class="fa fa-bars"></i>
-                    <span class="sr-only">Toggle Menu</span>
-                </button>
-            </div>
-            <div class="bg-light border-bottom border-warning p-4">
-                <h1><a href="/" class="logo text-warning"><i class="fas fa-bug"></i> bug tracker</a></h1>
-            </div>
-            <div class="p-4">
-                <ul class="list-unstyled navbar-nav">
-                    <li class="nav-item">
-                        <a href="/Dashboard" class="nav-link border-bottom shadow-sm pl-3"><i class="fas fa-chart-pie pr-3"></i> Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="/Projects" class="nav-link border-bottom shadow-sm pl-3"><i class="fas fa-project-diagram pr-3"></i> Projects</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        @{ Html.RenderAction("SideMenu", "Notifications");}
+        @*@Html.Partial("_SideMenuPartial")*@
 
         <!-- Page Content  -->
         <div id="content" class="p-4 p-md-5 pt-5">

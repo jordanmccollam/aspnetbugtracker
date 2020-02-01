@@ -34,6 +34,10 @@ namespace BugTracker.Controllers
                 .Where(p => p.OwnerUser.UserName == User.Identity.Name)
                 .ToList();
 
+            var notifications = _context.Notifications
+                .Where(n => n.For == User.Identity.Name)
+                .ToList();
+
             foreach (var project in allProjects)
             {
                 if (this.IsUserOnProject(userId, project.Id))
@@ -50,7 +54,8 @@ namespace BugTracker.Controllers
             DashboardViewModel vm = new DashboardViewModel
             {
                 Projects = projects,
-                Issues = issues
+                Issues = issues,
+                Notifications = notifications
             };
 
             return View(vm);

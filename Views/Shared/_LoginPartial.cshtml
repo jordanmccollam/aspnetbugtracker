@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNet.Identity
+@model IEnumerable<BugTracker.Models.Notification>
 
 @if (Request.IsAuthenticated)
 {
@@ -9,6 +10,13 @@
         <ul class="navbar-nav">
             <li class="nav-item">
                 @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @class = "nav-link" })
+            </li>
+            <li class="nav-item">
+                <a href="/Notifications" class="btn btn-link nav-link notifications"><i class="fas fa-bell"></i></a>
+                @if (Model.Any())
+                {
+                    <span class="badge rounded-circle badge-warning navbar-badge">@Model.Count()</span>
+                }
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="javascript:document.getElementById('logoutForm').submit()">Log off</a>

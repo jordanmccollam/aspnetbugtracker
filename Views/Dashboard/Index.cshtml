@@ -3,81 +3,106 @@
     ViewBag.Title = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-    <h2 class="border-bottom custom-font pb-2"><i class="fas fa-chart-pie"></i> Dashboard</h2>
-    <p class="mb-4">TIP: Click on a column to filter / sort. TIP: Hover over any row to see its details</p>
+<h2 class="border-bottom custom-font pb-2"><i class="fas fa-chart-pie"></i> Dashboard</h2>
+<p class="mb-4">TIP: Click on a column to filter / sort. TIP: Hover over any row to see its details</p>
 
-    <div class="row">
-        <div class="col-md-6">
 
-            <div class="border-bottom border-info pt-3">
-                <h3 class="text-right text-info slide-in-left d-none d-md-block"><i class="fas fa-project-diagram"></i> Projects</h3>
-                <h6 class="text-right text-info slide-in-left pt-3 d-md-none"><i class="fas fa-project-diagram"></i> Projects</h6>
+@if (Model.Notifications.Any())
+{
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="border-bottom border-warning pt-3">
+                <h3 class="text-warning slide-in-left d-none d-md-block"><i class="fas fa-bell"></i> Notifications</h3>
+                <h6 class="text-warning slide-in-left d-md-none"><i class="fas fa-bell"></i> Notifications</h6>
             </div>
 
-           <table class="table table-info table-hover" id="projects-table">
-               <thead>
-                   <tr>
-                       <th>Name</th>
-                       <th>Owner</th>
-                       <th>Issues</th>
-                   </tr>
-               </thead>
-               <tbody>
-                   @foreach (var project in Model.Projects)
-                   {
-                       <tr class="project">
-                           <th><a class="text-decoration-none text-dark" href="/Projects/Details/@project.Id">@project.Name</a></th>
-                           <td class="d-none swing-in-top-fwd"><i class="fas fa-user"></i> @project.OwnerUser.UserName</td>
-                           <td class="d-none swing-in-top-fwd"><i class="fas fa-tasks"></i> @project.Issues.Count()</td>
-                       </tr>
-                   }
-               </tbody>
-           </table>
-
-            <button id="create-project" class="btn btn-info btn-block rounded shadow-sm mt-5"><i class="fas fa-plus"></i> Create New Project</button>
-        </div>
-
-        <div class="col-md-6 mt-5 mt-md-0">
-            <div class="border-bottom border-success pt-3">
-                <h4 class="text-right text-success slide-in-left d-none d-md-block"><i class="fas fa-tasks"></i> Issues Assigned to You</h4>
-                <h6 class="text-right text-success slide-in-left pt-3 d-md-none"><i class="fas fa-tasks"></i> Issues</h6>
-            </div>
-
-            <table class="table table-success table-hover" id="issues-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Project</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
+            <table class="table table-warning table-hover">
                 <tbody>
-                    @foreach (var issue in Model.Issues)
+                    @foreach (var notification in Model.Notifications)
                     {
-                        <tr class="issue">
-                            <th><a class="text-decoration-none text-dark" href="/Projects/Details/@issue.Project.Id">@issue.Name</a></th>
-                            <td class="d-none swing-in-top-fwd"><i class="fas fa-project-diagram"></i> @issue.Project.Name</td>
-                            <td class="d-none swing-in-top-fwd"><i class="fas fa-exclamation"></i> @issue.Type</td>
-                        </tr>
+                            <tr class="justify-content-between d-flex">
+                                <td>@notification.Message</td>
+                                <td><a href="/notifications/read/@notification.Id" class="btn btn-sm btn-warning rounded">Mark As Read</a></td>
+                            </tr>
                     }
                 </tbody>
             </table>
+        </div>
+    </div>
+}
 
-            @if (Model.Projects.Any())
-            {
-                <button id="create-issue" class="btn btn-success btn-block rounded mt-5"><i class="fas fa-plus"></i> Create New Issue</button>
-            }
+<div class="row">
+    <div class="col-md-6">
 
+        <div class="border-bottom border-info pt-3">
+            <h3 class="text-right text-info slide-in-left d-none d-md-block"><i class="fas fa-project-diagram"></i> Projects</h3>
+            <h6 class="text-right text-info slide-in-left pt-3 d-md-none"><i class="fas fa-project-diagram"></i> Projects</h6>
         </div>
 
-        <p class="pt-5 mt-5 hide-me">
-            Tincidunt integer eu augue augue nunc elit dolor, luctus placerat scelerisque euismod, iaculis eu lacus nunc mi elit, vehicula ut laoreet ac, aliquam sit amet justo nunc tempor, metus vel.
+        <table class="table table-info table-hover" id="projects-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Owner</th>
+                    <th>Issues</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in Model.Projects)
+                {
+                    <tr class="project">
+                        <th><a class="text-decoration-none text-dark" href="/Projects/Details/@project.Id">@project.Name</a></th>
+                        <td class="d-none swing-in-top-fwd"><i class="fas fa-user"></i> @project.OwnerUser.UserName</td>
+                        <td class="d-none swing-in-top-fwd"><i class="fas fa-tasks"></i> @project.Issues.Count()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
 
-        </p>
-
-        @Html.Partial("_CreateProjectModal", new BugTracker.Models.Project())
-        @Html.Partial("_CreateIssueModal", new BugTracker.Models.Issue(), new ViewDataDictionary { { "Projects", Model.Projects } })
+        <button id="create-project" class="btn btn-info btn-block rounded shadow-sm mt-5"><i class="fas fa-plus"></i> Create New Project</button>
     </div>
+
+    <div class="col-md-6 mt-5 mt-md-0">
+        <div class="border-bottom border-success pt-3">
+            <h4 class="text-right text-success slide-in-left d-none d-md-block"><i class="fas fa-tasks"></i> Issues Assigned to You</h4>
+            <h6 class="text-right text-success slide-in-left pt-3 d-md-none"><i class="fas fa-tasks"></i> Issues</h6>
+        </div>
+
+        <table class="table table-success table-hover" id="issues-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Project</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var issue in Model.Issues)
+                {
+                    <tr class="issue">
+                        <th><a class="text-decoration-none text-dark" href="/Projects/Details/@issue.Project.Id">@issue.Name</a></th>
+                        <td class="d-none swing-in-top-fwd"><i class="fas fa-project-diagram"></i> @issue.Project.Name</td>
+                        <td class="d-none swing-in-top-fwd"><i class="fas fa-exclamation"></i> @issue.Type</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (Model.Projects.Any())
+        {
+            <button id="create-issue" class="btn btn-success btn-block rounded mt-5"><i class="fas fa-plus"></i> Create New Issue</button>
+        }
+
+    </div>
+
+    <p class="pt-5 mt-5 hide-me">
+        Tincidunt integer eu augue augue nunc elit dolor, luctus placerat scelerisque euismod, iaculis eu lacus nunc mi elit, vehicula ut laoreet ac, aliquam sit amet justo nunc tempor, metus vel.
+
+    </p>
+
+    @Html.Partial("_CreateProjectModal", new BugTracker.Models.Project())
+    @Html.Partial("_CreateIssueModal", new BugTracker.Models.Issue(), new ViewDataDictionary { { "Projects", Model.Projects } })
+</div>
 
 
 @section Scripts
@@ -124,5 +149,5 @@
                 styleTable();
             });
         });
-    </script>    
+    </script>
 }

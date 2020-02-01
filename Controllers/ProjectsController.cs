@@ -96,7 +96,16 @@ namespace BugTracker.Controllers
                     .SingleOrDefault(u => u.UserName == issue.AssignedTo);
 
                 if (project.OwnerUser.UserName != issue.AssignedTo)
+                {
+                    Notification notification = new Notification
+                    {
+                        For = issue.AssignedTo,
+                        Message = "You were assigned to issue, " + issue.Name
+                    };
+
+                    _context.Notifications.Add(notification);
                     project.Users.Add(user);
+                }
             }
 
             issue.OwnerUserId = User.Identity.GetUserId();
@@ -131,9 +140,18 @@ namespace BugTracker.Controllers
                 var userInDb = _context.Users
                 .SingleOrDefault(u => u.UserName == userToAdd);
 
-                _context.Projects
-                    .SingleOrDefault(p => p.Id == id)
-                    .Users.Add(userInDb);
+                var project = _context.Projects
+                    .SingleOrDefault(p => p.Id == id);
+
+                Notification notification = new Notification
+                {
+                    For = userToAdd,
+                    Message = "You were added to project, " + project.Name
+                };
+
+                _context.Notifications.Add(notification);
+
+                project.Users.Add(userInDb);
 
                 _context.SaveChanges();
             };
@@ -164,7 +182,19 @@ namespace BugTracker.Controllers
         {
 
             var project = _context.Projects
+                .Include(p => p.Users)
                 .Single(p => p.Id == id);
+
+            foreach (var user in project.Users)
+            {
+                Notification notification = new Notification
+                {
+                    For = user.UserName,
+                    Message = "Project, " + project.Name + ", was deleted"
+                };
+
+                _context.Notifications.Add(notification);
+            }
 
             _context.Projects.Remove(project);
             _context.SaveChanges();
@@ -179,6 +209,13 @@ namespace BugTracker.Controllers
             var issue = _context.Issues
                 .Single(p => p.Id == id);
 
+            Notification notification = new Notification
+            {
+                For = issue.AssignedTo,
+                Message = "An issue you were assigned to, " + issue.Name + ", was deleted"
+            };
+
+            _context.Notifications.Add(notification);
             _context.Issues.Remove(issue);
             _context.SaveChanges();
 
@@ -201,6 +238,14 @@ namespace BugTracker.Controllers
                 var issuesToEdit = projectIssues.Where(i => i.AssignedTo == userToRemove).ToList();
 
                 issuesToEdit.ForEach(i => i.AssignedTo = null);
+
+                Notification notification = new Notification
+                {
+                    For = userToRemove,
+                    Message = "You were removed from project, " + _context.Projects.SingleOrDefault(p => p.Id == id).Name
+                };
+
+                _context.Notifications.Add(notification);
 
                 _context.Projects
                     .SingleOrDefault(p => p.Id == id)

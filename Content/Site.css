@@ -170,3 +170,13 @@ a[data-toggle="collapse"] {
 .hide-me {
     opacity: 0;
 }
+
+.notifications {
+    position: relative;
+}
+
+.navbar-badge {
+    position: absolute;
+    bottom: 28px;
+    right: 93px;
+}
