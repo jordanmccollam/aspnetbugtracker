@@ -10,7 +10,7 @@ namespace BugTracker
         {
             bundles.Add(new ScriptBundle("~/bundles/lib").Include(
                         "~/Scripts/jquery-{version}.js",
-                        "~/Scripts/bootstrap.js",
+                        
                         "~/Scripts/sidebar.js",
                         "~/Scripts/datatables.js"
                         ));

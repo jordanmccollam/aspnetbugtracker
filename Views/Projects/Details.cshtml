@@ -12,7 +12,8 @@
     <div class="col-md-7">
 
         <div class="border-bottom border-success pt-2">
-            <h2 class="text-right text-success slide-in-left custom-font"><i class="fas fa-tasks"></i> Issues</h2>
+            <h2 class="text-right text-success slide-in-left custom-font d-none d-md-block"><i class="fas fa-tasks"></i> Issues</h2>
+            <h6 class="text-right text-success slide-in-left custom-font d-md-none pt-3"><i class="fas fa-tasks"></i> Issues</h6>
         </div>
 
         <table class="table table-success table-hover" id="issues-table">
@@ -45,7 +46,7 @@
             <button id="create-issue" class="btn btn-success btn-block rounded shadow-sm mt-5"><i class="fas fa-plus"></i> Create New Issue</button>
     </div>
 
-    <div class="col-md-5">
+    <div class="col-md-5 mt-5 mt-md-0">
         @foreach (var issue in Model.Issues)
         {
         <div id="issue-@issue.Id" class="d-none issue-details swing-in-top-fwd">
